@@ -1,0 +1,3 @@
+Translate functions into React components
+Start with hardcoded cards
+then figure out how to grab generated cards from firebase

@@ -17,7 +17,11 @@
 // create static list of questions and ansers with matching IDs then loop through the list to display on page.
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-
+import './DragCard.css';
+// import Container from 'react-bootstrap';
+// import Row from 'react-bootstrap';
+// import Col from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 
 function DragCard() {
   // let selectedId;
@@ -81,30 +85,27 @@ function DragCard() {
   console.log('Logging question IDs:', questionList.map((question) => `${question.q} ${question.id}`));
   
   return (
-    <React.Fragment>
-      <p>hello world</p>
+    <>
       <div>
-        Questions:
-        {questionList.map((question, id) =>
-          <p key={id}>{question.q}</p>
-        )}
-      </div >
-      <br />
-      <br />
-      <div>
-        Answers:
-        {answerList.map((answer, id) =>
-          <p key={id}>{answer.a}
+        <h3>Questions:</h3>
+        {questionList.map((question, id) => (
+          <p className='questionList' key={id} draggable="true">
+            {question.q}
           </p>
-        )}
+        ))}
       </div>
-    </React.Fragment>
-  )
+  
+      <div >
+        <h3>Answers:</h3>
+        {answerList.map((answer, id) => (
+          <p className='answerList' key={id} draggable="true">
+            {answer.a}
+          </p>
+        ))}
+      </div>
+    </>
+  );
 }
 
+
 export default DragCard;
-
-
-// ZackCipolletta@gmail.com
-
-// Zachary Cipolletta

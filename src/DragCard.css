@@ -1,0 +1,19 @@
+.questionList {
+  list-style: none;
+  padding: 10px;
+  margin: 5px;
+  background-color: #cfd8dc;
+  border: 1px solid #b0bec5;
+  color: #263238;
+  cursor: grab;
+}
+
+.answerList {
+  list-style: none;
+  padding: 10px;
+  margin: 5px;
+  background-color: #cfd8dc;
+  border: 1px solid #b0bec5;
+  color: #263238;
+  cursor: grab;
+}

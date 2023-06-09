@@ -1,111 +1,210 @@
-// variables needed: selectedId, dropTargetId, matching counter
-
-// drag function: Spanish game has dragStart, dragEnter, dragLeave, dragOver and dragDrop
-// dragStart selects current ID, dragEnter and dragLeave deal with a class ('over') by adding or removing it -- these are only called in the function addEventListeners (bottom of page) -- changes color when hovered
-// dragOver invokes event.preventDefault
-// dragDrop handles removing matches by setting display to none if a match is made, also adds 1 to counter
-
-// checkForMatch function: both ways (dragging English or Spanish ex)
-// JS app works by using switch case and booleans (checkForMatch and checkForMatch2 -- both used in dragDrop function)
-
-// counter function (maybe? Spanish game counts to 5, which was the maximum number of matches provided)
-
-// playAgain function: reset cards, shows End message
-
-// useEffect for addEventListener functions
-
-// create static list of questions and ansers with matching IDs then loop through the list to display on page.
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DragCard.css';
-// import Container from 'react-bootstrap';
-// import Row from 'react-bootstrap';
-// import Col from 'react-bootstrap';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Grid, Paper } from '@mui/material';
 
 function DragCard() {
-  // let selectedId;
-  // let dropTargetId;
-  // let matchingCounter = 0;
+  const [selectedId, setSelectedId] = useState(null);
+  const [dropTargetId, setDropTargetId] = useState(null);
+  const [matchingCounter, setMatchingCounter] = useState(0);
+  const [hiddenElements, setHiddenElements] = useState([]);
+  const [triumphMessage, setTriumphMessage] = useState(false);
+  const [allHidden, setAllHidden] = useState(false);
+
+  const dragStart = (event) => {
+    const id = event.target.id;
+    setSelectedId(id);
+    console.log('drag started');
+  };
+
+  useEffect(() => {
+    console.log(selectedId);
+  }, [selectedId]);
+
+  const dragEnter = (event) => {
+    event.target.classList.add('over');
+  };
+
+  const dragLeave = (event) => {
+    event.target.classList.remove('over');
+  };
+
+  const dragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const dragDrop = (event) => {
+    event.preventDefault();
+    const id = event.target.id;
+    setDropTargetId(id);
+  };
+
+  useEffect(() => {
+    console.log(selectedId);
+    console.log(dropTargetId);
+  }, [selectedId, dropTargetId]);
+
+
+  //by using a useEffect we solve our issue of state not being updated when the if then statement is called to check for equality of selectedId and dropTargetId
+  useEffect(() => {
+    // if the id of the selected element equals the id of the target element, we continue with our function.
+    if (selectedId === dropTargetId) {
+      console.log('Yay it works!');
+      const selectedElement = document.getElementById(selectedId);
+      const dropTargetElement = document.getElementById(dropTargetId);
+    
+
+      // this is a null check, so if these variables are not assigned values, the if then statement will not run.
+      if (selectedElement && dropTargetElement) {
+        // selectedElement.style.display = 'none';
+        selectedElement.style.display = 'none';
+
+        // Find matching answer element with the same ID value and set its display to 'none'
+        const matchingAnswerElement = document.querySelector(
+          `.answerList.draggableItem[id="${selectedId}"]`
+        );
+
+        // same here - if matchingAnswerElement is not assigned a value, the statement will not run. This prevents the error: Cannot read properties of null (reading 'style')
+        if (matchingAnswerElement) {
+          matchingAnswerElement.style.display = 'none';
+        }
+      }
+    } else {
+      console.log('try again');
+    }
+
+    const resetDragStyles = () => {
+      const draggableItems = document.querySelectorAll('.draggableItem');
+      draggableItems.forEach((item) => {
+        item.classList.remove('over');
+      });
+    };
+
+    resetDragStyles();
+  }, [selectedId, dropTargetId]);
+
+  useEffect(() => {
+    const draggableListItems = document.querySelectorAll('.draggableItem');
+    draggableListItems.forEach((item) => {
+      item.addEventListener('dragstart', dragStart);
+      item.addEventListener('dragenter', dragEnter);
+      item.addEventListener('drop', dragDrop);
+      item.addEventListener('dragover', dragOver);
+      item.addEventListener('dragleave', dragLeave);
+    });
+
+    return () => {
+      const draggableListItems = document.querySelectorAll('.draggableItem');
+      draggableListItems.forEach((item) => {
+        item.removeEventListener('dragstart', dragStart);
+        item.removeEventListener('dragenter', dragEnter);
+        item.removeEventListener('drop', dragDrop);
+        item.removeEventListener('dragover', dragOver);
+        item.removeEventListener('dragleave', dragLeave);
+      });
+    };
+  }, []);
+
+
+  useEffect(() => {
+    // Check if all elements are hidden
+    const allHidden = questionList.every((question) => {
+      const questionElement = document.getElementById(question.id);
+      return questionElement.style.display === 'none';
+    }) && answerList.every((answer) => {
+      const answerElement = document.getElementById(answer.id);
+      return answerElement.style.display === 'none';
+    });
+  
+    if (allHidden) {
+      setAllHidden(true);
+      console.log('All elements are hidden');
+    }
+  }, [selectedId, dropTargetId]);
+  
 
 
   const questionList = [
     {
       q: 'What color is the sky?',
-      id: 1
+      id: 1,
     },
     {
       q: 'What is your name?',
-      id: 2
+      id: 2,
     },
     {
       q: 'Nice to meet you',
-      id: 3
+      id: 3,
     },
     {
-      q: 'What is the capitol of Oregon',
-      id: 4
+      q: 'What is the capital of Oregon',
+      id: 4,
     },
     {
       q: 'What is the national bird',
-      id: 5
-    }
-
+      id: 5,
+    },
   ];
 
   const answerList = [
     {
       a: 'Blue',
-      id: 1
+      id: 1,
     },
     {
       a: '¿Cómo te llamas?',
-      id: 2
+      id: 2,
     },
     {
       a: 'Mucho gusto',
-      id: 3
+      id: 3,
     },
     {
       a: 'Salem',
-      id: 4
+      id: 4,
     },
     {
       a: 'the bald eagle',
-      id: 5
-    }
-
+      id: 5,
+    },
   ];
 
-  // useEffect(() => {
-
-  // })
-
-
-  console.log('Logging question IDs:', questionList.map((question) => `${question.q} ${question.id}`));
-  
   return (
-    <>
-      <div>
-        <h3>Questions:</h3>
-        {questionList.map((question, id) => (
-          <p className='questionList' key={id} draggable="true">
-            {question.q}
-          </p>
-        ))}
-      </div>
-  
-      <div >
-        <h3>Answers:</h3>
-        {answerList.map((answer, id) => (
-          <p className='answerList' key={id} draggable="true">
-            {answer.a}
-          </p>
-        ))}
-      </div>
-    </>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Paper>
+            <h3>Questions 777:</h3>
+            {questionList.map((question, id) => (
+              <p className="questionList draggableItem"
+                key={id}
+                draggable="true"
+                id={question.id}>
+                {question.q}
+              </p>
+            ))}
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper>
+            <h3>Answers:</h3>
+            {answerList.map((answer, id) => (
+              <p className="answerList draggableItem"
+                key={id}
+                draggable="true"
+                id={answer.id}>
+                {answer.a}
+              </p>
+            ))}
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+        <Grid container justifyContent="center"> {/* Center the winMessage horizontally */}
+          {allHidden && <p className='winMessage'>You win!</p>}
+        </Grid>
+      </Grid>
+
+      </Grid>
   );
 }
-
 
 export default DragCard;

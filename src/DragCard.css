@@ -1,43 +1,40 @@
 .questionList {
-  list-style: none;
-  padding: 10px;
-  margin: 5px;
-  background-color: #cfd8dc;
+  list-style: none !important;
+  padding: 10px !important;
+  margin: 5px !important;
+  background-color: #cfd8dc !important;
   border: 1px solid #b0bec5;
-  color: #263238;
-  cursor: grab;
+  color: #263238 !important;
+  cursor: grab !important;
+  flex-grow: 1 !important;
+  display: block;
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .answerList {
-  list-style: none;
-  padding: 10px;
-  margin: 5px;
-  background-color: #cfd8dc;
-  border: 1px solid #b0bec5;
-  color: #263238;
-  cursor: grab;
-}
-
-.column-left, .column-right {
+  list-style: none !important;
+  flex-grow: 1 !important;
+  padding: 10px !important;
+  margin: 5px !important;
+  background-color: #cfd8dc !important;
+  border: 1px solid #b0bec5 !important;
+  color: #263238 !important;
+  cursor: grab !important;
   display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 768px) {
-  .column-left, .column-right {
-    flex-direction: row;
-  }
-}
-
-.square {
-  border: 1px solid black;
-  background-color: blue;
-  color: white;
-  height: 100px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 24px;
+  align-items: center;
+  /* text-align: center !important; */
+}
+
+.over {
+  background-color: #b267c9 !important;
+}
+
+.remove {
+  display: none;
 }
 
 .container {
@@ -57,17 +54,17 @@ p {
   text-align: center;
 }
 
-main {
+/* main {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 5px;
-}
+} */
 
 .draggable-list {
   padding: 5px;
 }
 
-li {
+/* li {
   list-style: none;
   padding: 10px;
   margin: 5px;
@@ -75,11 +72,7 @@ li {
   border: 1px solid #b0bec5;
   color: #263238;
   cursor: grab;
-}
-
-.over {
-  background-color: #ae90aa;
-}
+} */
 
 
 table {
@@ -122,7 +115,6 @@ button:hover {
   display: none;
 }
 
-.winMessage {
-  display: flex;
-  justify-content: center;
+.test {
+  background-color: purple;
 }

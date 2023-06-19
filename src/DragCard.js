@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './DragCard.css';
-import { Grid, Paper } from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import AnswerTable from './AnswerTable';
 
-function DragCard() {
+function DragCard({ answers, questions, resultsQuestions, resultsAnswers }) {
   const [selectedId, setSelectedId] = useState(null);
   const [dropTargetId, setDropTargetId] = useState(null);
-  const [matchingCounter, setMatchingCounter] = useState(0);
-  const [hiddenElements, setHiddenElements] = useState([]);
-  const [triumphMessage, setTriumphMessage] = useState(false);
   const [allHidden, setAllHidden] = useState(false);
+  const [answerStyle, setAnswerStyle] = useState(false);
+  const [questionStyle, setQuestionStyle] = useState(false);
+
+  console.log('answerStyle', answerStyle);
 
   const dragStart = (event) => {
-    const id = event.target.id;
-    setSelectedId(id);
-    console.log('drag started');
+    if (event.target.tagName.toLowerCase() === "img") {
+      const id = event.target.parentElement.id;
+      setSelectedId(id);
+    } else {
+      const id = event.target.id;
+      setSelectedId(id);
+    }
   };
 
   useEffect(() => {
-    console.log(selectedId);
   }, [selectedId]);
 
   const dragEnter = (event) => {
@@ -34,176 +39,205 @@ function DragCard() {
 
   const dragDrop = (event) => {
     event.preventDefault();
-    const id = event.target.id;
-    setDropTargetId(id);
+    if (event.target.tagName.toLowerCase() === "img") {
+      const id = event.target.parentElement.id;
+      setDropTargetId(id);
+    } else {
+      const id = event.target.id;
+      setDropTargetId(id);
+    } 
   };
-
-  useEffect(() => {
-    console.log(selectedId);
-    console.log(dropTargetId);
-  }, [selectedId, dropTargetId]);
-
 
   //by using a useEffect we solve our issue of state not being updated when the if then statement is called to check for equality of selectedId and dropTargetId
   useEffect(() => {
-    // if the id of the selected element equals the id of the target element, we continue with our function.
-    if (selectedId === dropTargetId) {
-      console.log('Yay it works!');
+    if (selectedId && dropTargetId) {
+
       const selectedElement = document.getElementById(selectedId);
       const dropTargetElement = document.getElementById(dropTargetId);
-    
 
-      // this is a null check, so if these variables are not assigned values, the if then statement will not run.
-      if (selectedElement && dropTargetElement) {
-        // selectedElement.style.display = 'none';
-        selectedElement.style.display = 'none';
+      const selectedName = selectedElement.getAttribute('data-name');
+      const dropTargetName = dropTargetElement.getAttribute('data-name');
 
-        // Find matching answer element with the same ID value and set its display to 'none'
-        const matchingAnswerElement = document.querySelector(
-          `.answerList.draggableItem[id="${selectedId}"]`
-        );
+      // if the id of the selected element equals the id of the target element, we continue with our function.
+      if (selectedElement !== dropTargetElement && selectedName === dropTargetName) {
+        //console.log('Yay it works!');
+        const selectedElement = document.getElementById(selectedId);
+        const dropTargetElement = document.getElementById(dropTargetId);
 
-        // same here - if matchingAnswerElement is not assigned a value, the statement will not run. This prevents the error: Cannot read properties of null (reading 'style')
-        if (matchingAnswerElement) {
-          matchingAnswerElement.style.display = 'none';
+
+        // this is a null check, so if these variables are not assigned values, the if then statement will not run.
+        if (selectedElement && dropTargetElement) {
+          // selectedElement.style.display = 'none';
+          selectedElement.style.display = 'none';
+          dropTargetElement.style.display = 'none';
+
         }
+      } else {
+        console.log('try again');
       }
+
+
+      const resetDragStyles = () => {
+        const draggableItems = document.querySelectorAll('.draggableItem');
+        draggableItems.forEach((item) => {
+          item.classList.remove('over');
+        });
+      };
+
+      resetDragStyles();
+      setSelectedId(null);
+      setDropTargetId(null);
+      setAnswerStyle(false);
     } else {
-      console.log('try again');
+      console.log("Both elements do not exist yet")
     }
 
-    const resetDragStyles = () => {
-      const draggableItems = document.querySelectorAll('.draggableItem');
-      draggableItems.forEach((item) => {
-        item.classList.remove('over');
-      });
-    };
-
-    resetDragStyles();
   }, [selectedId, dropTargetId]);
 
   useEffect(() => {
-    const draggableListItems = document.querySelectorAll('.draggableItem');
-    draggableListItems.forEach((item) => {
-      item.addEventListener('dragstart', dragStart);
-      item.addEventListener('dragenter', dragEnter);
-      item.addEventListener('drop', dragDrop);
-      item.addEventListener('dragover', dragOver);
-      item.addEventListener('dragleave', dragLeave);
-    });
-
-    return () => {
+    if (questions && answers) {
       const draggableListItems = document.querySelectorAll('.draggableItem');
       draggableListItems.forEach((item) => {
-        item.removeEventListener('dragstart', dragStart);
-        item.removeEventListener('dragenter', dragEnter);
-        item.removeEventListener('drop', dragDrop);
-        item.removeEventListener('dragover', dragOver);
-        item.removeEventListener('dragleave', dragLeave);
+        item.addEventListener('dragstart', dragStart);
+        item.addEventListener('dragenter', dragEnter);
+        item.addEventListener('drop', dragDrop);
+        item.addEventListener('dragover', dragOver);
+        item.addEventListener('dragleave', dragLeave);
       });
-    };
-  }, []);
+
+      return () => {
+        const draggableListItems = document.querySelectorAll('.draggableItem');
+        draggableListItems.forEach((item) => {
+          item.removeEventListener('dragstart', dragStart);
+          item.removeEventListener('dragenter', dragEnter);
+          item.removeEventListener('drop', dragDrop);
+          item.removeEventListener('dragover', dragOver);
+          item.removeEventListener('dragleave', dragLeave);
+        });
+      };
+    }
+  }, [questions, answers]);
 
 
   useEffect(() => {
-    // Check if all elements are hidden
-    const allHidden = questionList.every((question) => {
-      const questionElement = document.getElementById(question.id);
-      return questionElement.style.display === 'none';
-    }) && answerList.every((answer) => {
-      const answerElement = document.getElementById(answer.id);
-      return answerElement.style.display === 'none';
-    });
-  
-    if (allHidden) {
-      setAllHidden(true);
-      console.log('All elements are hidden');
+    if (selectedId && dropTargetId && questions) {
+      // Check if all elements are hidden
+      const allHidden = questions.every((question) => { // << change questions to questionList
+        const questionElement = document.getElementById(question.id);
+        return questionElement.style.display === 'none';
+      }) && answers.every((answer) => { // << change answers to answerLIst
+        const answerElement = document.getElementById(answer.id);
+        return answerElement.style.display === 'none';
+      });
+
+      if (allHidden) {
+        setAllHidden(true);
+        // console.log('All elements are hidden');
+      }
     }
-  }, [selectedId, dropTargetId]);
-  
+  }, [selectedId, dropTargetId, questions]);
 
 
-  const questionList = [
-    {
-      q: 'What color is the sky?',
-      id: 1,
-    },
-    {
-      q: 'What is your name?',
-      id: 2,
-    },
-    {
-      q: 'Nice to meet you',
-      id: 3,
-    },
-    {
-      q: 'What is the capital of Oregon',
-      id: 4,
-    },
-    {
-      q: 'What is the national bird',
-      id: 5,
-    },
-  ];
+  // Check if click events match
+  const handleClick = (event) => {
+    if (selectedId) {
+      // Do the drop functionality - set dropTargetId
+      if (event.target.tagName.toLowerCase() === "img") {
+        const id = event.target.parentElement.id;
+        setDropTargetId(id);
+      } else {
+        const id = event.target.id;
+        setDropTargetId(id);
+      } 
+    } else {
+      // Do the start drag functionality - set selectedId
+      if (event.target.tagName.toLowerCase() === "img") {
+        const id = event.target.parentElement.id;
+        console.log('id is generating TAG NAME', id);
+        setSelectedId(id);
+        // Check if paper style needs to be updated
+        setAnswerStyle(id)
+      } else {
+        const id = event.target.id;
+        console.log('id is generating', id);
+        setSelectedId(id);
+        // Check if paper style needs to be updated
+        setAnswerStyle(id)
+      }
 
-  const answerList = [
-    {
-      a: 'Blue',
-      id: 1,
-    },
-    {
-      a: '¿Cómo te llamas?',
-      id: 2,
-    },
-    {
-      a: 'Mucho gusto',
-      id: 3,
-    },
-    {
-      a: 'Salem',
-      id: 4,
-    },
-    {
-      a: 'the bald eagle',
-      id: 5,
-    },
-  ];
+    }
+  }
+
 
   return (
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <Paper>
-            <h3>Questions 777:</h3>
-            {questionList.map((question, id) => (
-              <p className="questionList draggableItem"
-                key={id}
-                draggable="true"
-                id={question.id}>
-                {question.q}
-              </p>
-            ))}
+    <Grid container spacing={2} style={{ display: "flex"}}>
+      <Grid item xs={6} style={{ display: "flex", flexDirection: "column"}}>
+        
+      {!allHidden && (
+        <h3>Questions:</h3>
+          )}
+
+        {/* Generating cards, including image (if exists) */}
+        {questions?.map((question) => ( // << change questions to questionList
+          <Paper 
+            // style = {{ flexGrow: 1 }}
+              className="draggableItem questionList"
+              key={question.id}
+              draggable="true"
+              id={question.id}
+              data-name={question.name}
+              onClick={(e) => handleClick(e)}
+              style={{
+                outline: answerStyle === question.id ? '3px solid blue' : 'inherit',
+                cursor:'grab !important'
+              }}
+            >
+              {question.q}
+              <br />
+              {question.qImage && (
+                <img src={question.qImage}
+                style={{ height: "10rem", pointerEvents:'none' }} /> // scale image as rem or px?
+                )}
           </Paper>
-        </Grid>
-        <Grid item xs={6}>
-          <Paper>
-            <h3>Answers:</h3>
-            {answerList.map((answer, id) => (
-              <p className="answerList draggableItem"
-                key={id}
-                draggable="true"
-                id={answer.id}>
-                {answer.a}
-              </p>
-            ))}
+        ))}
+      </Grid>
+
+      <Grid item xs={6} style={{display: "flex", flexDirection: "column"}}>
+      {!allHidden && (
+        <h3>Answers:</h3>
+          )}
+        {answers?.map((answer) => ( // << change answers to answerList
+          <Paper
+            // style={{ flexGrow: 1, textAlign: "center" }}
+            className="draggableItem answerList"
+            key={answer.id}
+            draggable="true"
+            id={answer.id}
+            data-name={answer.name}
+            onClick={(e) => handleClick(e)}
+            style={{
+              outline: answerStyle === answer.id ? '3px solid blue' : 'inherit',
+              cursor:'grab !important'
+            }}
+          >
+            {answer.a}
           </Paper>
-        </Grid>
-        <Grid item xs={12}>
+        ))}
+      </Grid>
+
+      <Grid item xs={12}>
         <Grid container justifyContent="center"> {/* Center the winMessage horizontally */}
-          {allHidden && <p className='winMessage'>You win!</p>}
+          {allHidden && (
+            <AnswerTable
+              questions={resultsQuestions}
+              answers={resultsAnswers}
+            />
+          )}
+          
         </Grid>
       </Grid>
 
-      </Grid>
+    </Grid>
   );
 }
 

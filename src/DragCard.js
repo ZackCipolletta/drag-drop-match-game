@@ -168,7 +168,6 @@ function DragCard({ answers, questions, resultsQuestions, resultsAnswers }) {
     }
   }
 
-
   return (
     <Grid container spacing={2} style={{ display: "flex"}}>
       <Grid item xs={6} style={{ display: "flex", flexDirection: "column"}}>

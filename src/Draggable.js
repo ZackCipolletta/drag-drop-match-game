@@ -89,10 +89,12 @@ function Draggable({ children, questions, style, className, onDragStart, onDragE
       {questions?.map((question) => (      
         <div
         ref={dragRef}
+        key={question.id}
+        draggable="true"
         className={className || "drag-react"}
-        style={{ position: 'fixed', left: '10px', top: '10px', zIndex: 99999, cursor: 'move', ...style }}
+        style={style}
         >
-          {/* {children} */}
+          {children}
           {question.q}
               <br />
               {question.qImage && (

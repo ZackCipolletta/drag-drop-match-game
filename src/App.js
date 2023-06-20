@@ -160,11 +160,6 @@ if (w > h) {
   );
 }
 
-
-
-
-
-
 function App() {
   const [studyset, setStudyset] = useState([]);
   console.log('studyset', studyset)
@@ -233,24 +228,23 @@ function App() {
 
   return (
     <div className="App">
-      {/* <DragCard
+      <DragCard
         answers={shuffledAnswers}
         questions={shuffledQuestions}
         resultsQuestions={questions}
         resultsAnswers={answers}
-      /> */}
+      />
 
+      {shuffledQuestions?.map((question) => (
         <Draggable
-                questions={shuffledQuestions}
-                style={{
-                  position: 'fixed',
-                  left: '10px',
-                  top: '10px',
-                  zIndex: 99999,
-                  cursor: 'move'
-                }}
+          questions={shuffledQuestions}
+          key={question.id}
+          id={question.id}
+          draggable="true"
+          style={{
+            left: Math.floor(Math.random() * adjustedW), top: topPosition()
+          }}
               >
-                {shuffledQuestions.map((question) => (
                   <div key={question.id}>
                     {question.q}
                     <br />
@@ -258,8 +252,9 @@ function App() {
                       <img src={question.qImage} style={{ height: "10rem", pointerEvents: 'none' }} />
                     )}
                   </div>
-                ))}
-              </Draggable>
+                
+      </Draggable>
+      ))}
     </div>
   );
 }
